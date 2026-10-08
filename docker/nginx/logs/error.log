@@ -1,0 +1,4 @@
+2026/10/08 11:32:59 [error] 5760#19740: *2 connect() failed (10061: No connection could be made because the target machine actively refused it) while connecting to upstream, client: 127.0.0.1, server: localhost, request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8000/", host: "localhost:8080"
+2026/10/08 11:33:26 [emerg] 548#12352: CreateFile() "D:\neoversity\DevOps\my-microservice-project/conf/nginx.conf" failed (3: The system cannot find the path specified)
+2026/10/08 11:33:59 [emerg] 4352#2248: CreateFile() "D:\neoversity\DevOps\my-microservice-project/conf/nginx.conf" failed (3: The system cannot find the path specified)
+2026/10/08 11:34:37 [notice] 24868#23624: signal process started
