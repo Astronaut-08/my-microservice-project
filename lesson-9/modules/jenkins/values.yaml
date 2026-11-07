@@ -27,6 +27,7 @@ controller:
     - git:latest
     - configuration-as-code:latest
     - job-dsl:latest
+    - credentials-binding:latest
 
 persistence:
   enabled: true
