@@ -1,5 +1,5 @@
 image:
-  repository: D:/neoversity/DevOps/my-microservice-project/docker/django
+  repository: 516885649085.dkr.ecr.us-west-2.amazonaws.com/lesson-5-ecr
   tag: latest
   pullPolicy: IfNotPresent
 
