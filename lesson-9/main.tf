@@ -53,7 +53,7 @@ module "eks" {
   cluster_name  = "eks-cluster-demo"         # Назва кластера
   subnet_ids    = module.vpc.private_subnets # Приватні підмережі для EKS і вузлів
   instance_type = "t3.medium"                # Тип інстансів
-  desired_size  = 1                          # Бажана кількість нодів
+  desired_size  = 2                          # Бажана кількість нодів
   max_size      = 2                          # Максимальна кількість нодів
   min_size      = 1                          # Мінімальна кількість нодів
 }
@@ -70,4 +70,11 @@ module "jenkins" {
     helm       = helm
     kubernetes = kubernetes
   }
+}
+
+# Підключаємо модуль ArgoCD
+module "argo_cd" {
+  source       = "./modules/argo_cd"
+  namespace    = "argocd"
+  chart_version = "5.46.4"
 }

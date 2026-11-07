@@ -1,0 +1,5 @@
+apiVersion: v2
+name: argo-apps
+description: Argo CD Application definitions
+type: application
+version: 0.1.0
