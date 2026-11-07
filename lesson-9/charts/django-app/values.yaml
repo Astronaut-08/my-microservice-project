@@ -1,0 +1,18 @@
+image:
+  repository: D:/neoversity/DevOps/my-microservice-project/docker/django
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8000
+
+ingress:
+  enabled: false
+
+config:
+  POSTGRES_PORT: 5432
+  POSTGRES_HOST: db 
+  POSTGRES_USER: django_user
+  POSTGRES_DB: django_db
+  POSTGRES_PASSWORD: 1111
