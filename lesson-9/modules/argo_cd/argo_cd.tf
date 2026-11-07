@@ -19,7 +19,12 @@ resource "helm_release" "argo_apps" {
   create_namespace = false
 
   values = [
-    file("${path.module}/charts/values.yaml")
+    file("${path.module}/charts/values.yaml"),
+    yamlencode({
+        applicationManifestChecksum = filesha256(
+        "${path.module}/charts/templates/application.yaml"
+        )
+    })
   ]
   depends_on = [helm_release.argo_cd]
 }

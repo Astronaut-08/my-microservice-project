@@ -3,11 +3,13 @@ kind: Application
 metadata:
   name: django-app
   namespace: argocd
+  annotations:
+    terraform-source-checksum: {{ .Values.applicationManifestChecksum | quote }}
 spec:
   project: default
   source:
     repoURL: https://github.com/Astronaut-08/my-microservice-project.git
-    targetRevision: main
+    targetRevision: lesson-9
     path: lesson-9/charts/django-app
     helm:
       valueFiles:
