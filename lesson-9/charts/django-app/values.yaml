@@ -1,6 +1,6 @@
 image:
   repository: 516885649085.dkr.ecr.us-west-2.amazonaws.com/lesson-5-ecr
-  tag: latest
+  tag: sqlite-test-20261107
   pullPolicy: IfNotPresent
 
 service:
