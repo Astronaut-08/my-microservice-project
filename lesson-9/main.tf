@@ -1,3 +1,28 @@
+# 1. Отримуємо дані про кластер EKS напряму через його назву з модуля eks
+data "aws_eks_cluster" "eks" {
+  name = module.eks.eks_cluster_name
+}
+
+data "aws_eks_cluster_auth" "eks" {
+  name = module.eks.eks_cluster_name
+}
+
+# 2. Провайдер Kubernetes (обов'язковий базис для Helm)
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.eks.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.eks.token
+}
+
+# 3. Провайдер Helm, що використовує конфігурацію Kubernetes
+provider "helm" {
+  kubernetes = {
+      host                   = data.aws_eks_cluster.eks.endpoint
+      cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
+      token                  = data.aws_eks_cluster_auth.eks.token
+    }
+}
+
 # Підключаємо модуль S3 та DynamoDB
 module "s3_backend" {
   source      = "./modules/s3-backend"
@@ -31,4 +56,16 @@ module "eks" {
   desired_size  = 1                          # Бажана кількість нодів
   max_size      = 2                          # Максимальна кількість нодів
   min_size      = 1                          # Мінімальна кількість нодів
+}
+
+# Підключаємо модуль Jenkins
+module "jenkins" {
+  source       = "./modules/jenkins"
+  cluster_name = module.eks.eks_cluster_name
+  kubeconfig   = data.aws_eks_cluster.eks.endpoint
+
+  providers = {
+    helm       = helm
+    kubernetes = kubernetes
+  }
 }

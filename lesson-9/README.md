@@ -1,7 +1,7 @@
 Структура проекту виглядає так 
 
 ```sh
-lesson-7/
+Progect/
 │
 ├── main.tf                  # Головний файл для підключення модулів
 ├── backend.tf               # Налаштування бекенду для стейтів (S3 + DynamoDB
@@ -24,11 +24,31 @@ lesson-7/
 │   │   ├── variables.tf     # Змінні для ECR
 │   │   └── outputs.tf       # Виведення URL репозиторію
 │   │
-│   ├── eks/                 # Модуль для Kubernetes кластера
-│   │   ├── eks.tf           # Створення кластера
+│   ├── eks/                      # Модуль для Kubernetes кластера
+│   │   ├── eks.tf                # Створення кластера
+│   │   ├── aws_ebs_csi_driver.tf # Встановлення плагіну csi drive
 │   │   ├── variables.tf     # Змінні для EKS
 │   │   └── outputs.tf       # Виведення інформації про кластер
-│
+│   │
+│   ├── jenkins/             # Модуль для Helm-установки Jenkins
+│   │   ├── jenkins.tf       # Helm release для Jenkins
+│   │   ├── variables.tf     # Змінні (ресурси, креденшели, values)
+│   │   ├── providers.tf     # Оголошення провайдерів
+│   │   ├── values.yaml      # Конфігурація jenkins
+│   │   └── outputs.tf       # Виводи (URL, пароль адміністратора)
+│   │ 
+│   └── argo_cd/             # ✅ Новий модуль для Helm-установки Argo CD
+│       ├── jenkins.tf       # Helm release для Jenkins
+│       ├── variables.tf     # Змінні (версія чарта, namespace, repo URL тощо)
+│       ├── providers.tf     # Kubernetes+Helm.  переносимо з модуля jenkins
+│       ├── values.yaml      # Кастомна конфігурація Argo CD
+│       ├── outputs.tf       # Виводи (hostname, initial admin password)
+│		    └──charts/                  # Helm-чарт для створення app'ів
+│ 	 	    ├── Chart.yaml
+│	  	    ├── values.yaml          # Список applications, repositories
+│			    └── templates/
+│		        ├── application.yaml
+│		        └── repository.yaml
 ├── charts/
 │   └── django-app/
 │       ├── templates/
