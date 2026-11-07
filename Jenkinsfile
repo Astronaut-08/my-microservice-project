@@ -12,7 +12,7 @@ spec:
       emptyDir: {}
   containers:
     - name: aws
-      image: amazon/aws-cli:2
+      image: public.ecr.aws/aws-cli/aws-cli:latest
       command: ["sh", "-c", "cat"]
       tty: true
       volumeMounts:
