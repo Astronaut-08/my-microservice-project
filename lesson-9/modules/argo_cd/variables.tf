@@ -13,5 +13,5 @@ variable "namespace" {
 variable "chart_version" {
   description = "Версія Argo CD чарта"
   type        = string
-  default     = "5.46.4" 
+  default     = "5.46.4"
 }

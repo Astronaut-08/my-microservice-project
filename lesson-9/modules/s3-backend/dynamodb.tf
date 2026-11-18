@@ -1,8 +1,8 @@
 # Create dymanoDB table
 resource "aws_dynamodb_table" "terraform_locks" {
-  name = var.table_name
+  name         = var.table_name
   billing_mode = "PAY_PER_REQUEST"
-  hash_key = "LockID"
+  hash_key     = "LockID"
 
   attribute {
     name = "LockID"
@@ -10,7 +10,7 @@ resource "aws_dynamodb_table" "terraform_locks" {
   }
 
   tags = {
-    Name = "Terraform lock table"
+    Name       = "Terraform lock table"
     Evironment = "lesson-5"
   }
 }
