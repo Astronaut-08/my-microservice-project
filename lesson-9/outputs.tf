@@ -88,3 +88,8 @@ output "rds_port" {
 output "rds_security_group_id" {
   value = module.rds.security_group_id
 }
+
+output "rds_db_name" {
+  description = "Назва бази даних."
+  value       = module.rds.db_name
+}

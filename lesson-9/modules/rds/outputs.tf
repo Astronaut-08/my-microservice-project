@@ -16,8 +16,15 @@ output "rds_port" {
     aws_db_instance.standard[0].port,
     aws_rds_cluster.aurora[0].port
   )
+  description = "Порт RDS instance або Aurora cluster."
 }
 
 output "security_group_id" {
-  value = aws_security_group.rds.id
+  value       = aws_security_group.rds.id
+  description = "ID security group, що контролює доступ до бази даних."
+}
+
+output "db_name" {
+  description = "Назва бази даних."
+  value       = var.db_name
 }
