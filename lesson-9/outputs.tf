@@ -2,46 +2,46 @@
 ################################################## BACKEND ###################################################
 output "s3_bucket_name" {
   description = "Name of S3-bucket for states"
-  value = module.s3_backend.s3_bucket_name
+  value       = module.s3_backend.s3_bucket_name
 }
 
 output "dynamodb_table_name" {
   description = "Name of DynamoDB for blocking states"
-  value = module.s3_backend.dynamodb_table_name
+  value       = module.s3_backend.dynamodb_table_name
 }
 
 ################################################## ERC ###################################################
 
 output "ecr_url" {
   description = "URL"
-  value = module.ecr.ecr_url
+  value       = module.ecr.ecr_url
 }
 
 ################################################## VPC ###################################################
 
 output "vpc_id" {
   description = "ID"
-  value = module.vpc.vpc_id
+  value       = module.vpc.vpc_id
 }
 
 output "public_subnets" {
   description = "public subnets ID"
-  value = module.vpc.public_subnets
+  value       = module.vpc.public_subnets
 }
 
 output "private_subnets" {
   description = "private subnets ID"
-  value = module.vpc.private_subnets
+  value       = module.vpc.private_subnets
 }
 
 output "internet_gateway_id" {
   description = "gateway ID"
-  value = module.vpc.internet_gateway_id
+  value       = module.vpc.internet_gateway_id
 }
 
 output "nat_gateway_id" {
   description = "NAT gateway ID"
-  value = module.vpc.nat_gateway_id
+  value       = module.vpc.nat_gateway_id
 }
 
 ################################################## EKS ###################################################
@@ -69,4 +69,27 @@ output "jenkins_release" {
 
 output "jenkins_namespace" {
   value = module.jenkins.jenkins_namespace
+}
+
+################################################## RDS ###################################################
+
+output "rds_endpoint" {
+  value = module.rds.rds_endpoint
+}
+
+output "rds_reader_endpoint" {
+  value = module.rds.rds_reader_endpoint
+}
+
+output "rds_port" {
+  value = module.rds.rds_port
+}
+
+output "rds_security_group_id" {
+  value = module.rds.security_group_id
+}
+
+output "rds_db_name" {
+  description = "Назва бази даних."
+  value       = module.rds.db_name
 }

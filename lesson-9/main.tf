@@ -7,6 +7,10 @@ data "aws_eks_cluster_auth" "eks" {
   name = module.eks.eks_cluster_name
 }
 
+provider "aws" {
+  region = "us-west-2"
+}
+
 # 2. Провайдер Kubernetes (обов'язковий базис для Helm)
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.eks.endpoint
@@ -17,10 +21,10 @@ provider "kubernetes" {
 # 3. Провайдер Helm, що використовує конфігурацію Kubernetes
 provider "helm" {
   kubernetes = {
-      host                   = data.aws_eks_cluster.eks.endpoint
-      cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
-      token                  = data.aws_eks_cluster_auth.eks.token
-    }
+    host                   = data.aws_eks_cluster.eks.endpoint
+    cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
+    token                  = data.aws_eks_cluster_auth.eks.token
+  }
 }
 
 # Підключаємо модуль S3 та DynamoDB
@@ -60,9 +64,9 @@ module "eks" {
 
 # Підключаємо модуль Jenkins
 module "jenkins" {
-  source       = "./modules/jenkins"
-  cluster_name = module.eks.eks_cluster_name
-  kubeconfig   = data.aws_eks_cluster.eks.endpoint
+  source            = "./modules/jenkins"
+  cluster_name      = module.eks.eks_cluster_name
+  kubeconfig        = data.aws_eks_cluster.eks.endpoint
   oidc_provider_arn = module.eks.oidc_provider_arn
   oidc_provider_url = module.eks.oidc_provider_url
 
@@ -74,7 +78,46 @@ module "jenkins" {
 
 # Підключаємо модуль ArgoCD
 module "argo_cd" {
-  source       = "./modules/argo_cd"
-  namespace    = "argocd"
+  source        = "./modules/argo_cd"
+  namespace     = "argocd"
   chart_version = "5.46.4"
 }
+
+# Підключаємо модуль RDS
+module "rds" {
+  source = "./modules/rds"
+
+  name       = "myapp-db"
+  use_aurora = false
+
+  db_port             = 5432
+  allowed_cidr_blocks = ["10.0.0.0/16"]
+
+  # --- RDS-only ---
+  engine                     = "postgres"
+  engine_version             = "15.19"
+  parameter_group_family_rds = "postgres15"
+
+  # Common
+  instance_class          = "db.t3.micro"
+  allocated_storage       = 20
+  db_name                 = "myapp"
+  username                = "postgres"
+  password                = "admin123AWS23"
+  subnet_private_ids      = module.vpc.private_subnets
+  subnet_public_ids       = module.vpc.public_subnets
+  publicly_accessible     = false
+  vpc_id                  = module.vpc.vpc_id
+  multi_az                = false
+  backup_retention_period = 1
+  parameters = {
+    max_connections = "200"
+    log_statement   = "all"
+    work_mem        = "4096"
+  }
+
+  tags = {
+    Environment = "dev"
+    Project     = "myapp"
+  }
+} 
