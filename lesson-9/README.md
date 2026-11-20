@@ -35,6 +35,10 @@ lesson-9/
 │   │   ├── shared.tf
 │   │   ├── variables.tf
 │   │   └── outputs.tf
+│   ├── monitoring/
+│   │   ├── monitoring.tf
+│   │   ├── variables.tf
+│   │   └── versions.tf
 │   ├── jenkins/
 │   │   ├── jenkins.tf
 │   │   ├── variables.tf
@@ -255,6 +259,63 @@ Set-Location D:\neoversity\DevOps\my-microservice-project\lesson-9\charts\django
 helm upgrade --install django-app . --namespace default
 ```
 
+## Prometheus і Grafana
+
+Моніторинг розгортається у кластері EKS через Helm-модуль `modules/monitoring`, який встановлює chart `kube-prometheus-stack` версії `93.5.0` у namespace `monitoring`.
+
+До складу входять Prometheus, Grafana, Alertmanager, Prometheus Operator, kube-state-metrics і node-exporter. Збирання метрик Etcd, Kubernetes Controller Manager та Scheduler вимкнене, оскільки в EKS цими компонентами керує AWS.
+
+Prometheus зберігає метрики протягом 7 днів на EBS volume розміром 10 GiB. Grafana використовує EBS volume 5 GiB. Для обох PVC задано StorageClass `ebs-sc`, створений для EBS CSI.
+
+### Доступ до Grafana
+
+Grafana доступна як внутрішній `ClusterIP`, тому для локального доступу використовується port-forward. У PowerShell виконайте:
+
+```powershell
+kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3001:80
+```
+
+Не закриваючи це вікно термінала, відкрийте <http://localhost:3001>. Вхід: користувач `admin`, пароль — значення змінної Terraform `grafana_admin_password`.
+
+Якщо локальний порт `3001` уже зайнятий, виберіть інший, наприклад `3002:80`, і відкрийте відповідний localhost URL. Щоб завершити port-forward, натисніть `Ctrl+C`.
+
+Для локального перегляду інтерфейсу Prometheus в окремому терміналі виконайте:
+
+```powershell
+kubectl -n monitoring port-forward svc/kube-prometheus-stack-prometheus 9090:9090
+```
+
+Потім відкрийте <http://localhost:9090>.
+
+### Пароль Grafana
+
+Пароль задається через root-змінну Terraform `grafana_admin_password`. У PowerShell встановіть її перед командами Terraform:
+
+```powershell
+$env:TF_VAR_grafana_admin_password = "ваш-навчальний-пароль"
+terraform plan
+terraform apply
+```
+
+Змінна `sensitive` приховує пароль у звичайному виводі Terraform, але значення зберігається у Terraform state. Захищайте state-файл або S3 backend так само, як пароль.
+
+### Перевірка стану
+
+```powershell
+kubectl get pods,pvc -n monitoring
+helm status kube-prometheus-stack -n monitoring
+```
+
+Pod-и моніторингу мають бути `Running`, а PVC — `Bound`. Якщо `node-exporter` залишається `Pending`, перевірте події Pod-а:
+
+```powershell
+kubectl describe pod <назва-pod-а> -n monitoring
+```
+
+Повідомлення `Too many pods` означає, що на відповідному вузлі вичерпано ліміт Pod-ів. У такому разі частина метрик вузла може бути відсутня.
+
+Цей модуль збирає метрики EKS/Kubernetes. Метрики RDS до Prometheus автоматично не додаються; для них потрібно окремо налаштувати інтеграцію з CloudWatch.
+
 ## Призначення основних модулів
 
 - **S3 backend** — S3 bucket для Terraform state та DynamoDB table.
@@ -263,3 +324,4 @@ helm upgrade --install django-app . --namespace default
 - **EKS** — Kubernetes cluster, node group і EBS CSI driver.
 - **RDS** — перемикний модуль для звичайної RDS instance або Aurora.
 - **Jenkins та Argo CD** — Helm-розгортання інструментів у Kubernetes.
+- **Monitoring** — Prometheus, Grafana, Alertmanager та метрики Kubernetes у EKS.

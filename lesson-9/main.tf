@@ -56,9 +56,9 @@ module "eks" {
   source        = "./modules/eks"
   cluster_name  = "eks-cluster-demo"         # Назва кластера
   subnet_ids    = module.vpc.private_subnets # Приватні підмережі для EKS і вузлів
-  instance_type = "t3.medium"                # Тип інстансів
-  desired_size  = 2                          # Бажана кількість нодів
-  max_size      = 2                          # Максимальна кількість нодів
+  instance_type = "t3.small"                # Тип інстансів
+  desired_size  = 3                          # Бажана кількість нодів
+  max_size      = 3                          # Максимальна кількість нодів
   min_size      = 1                          # Мінімальна кількість нодів
 }
 
@@ -81,6 +81,20 @@ module "argo_cd" {
   source        = "./modules/argo_cd"
   namespace     = "argocd"
   chart_version = "5.46.4"
+}
+
+# Prometeus and Grafana
+module "monitoring" {
+  source = "./modules/monitoring"
+
+  namespace              = "monitoring"
+  chart_version          = "93.5.0"
+  grafana_admin_password = var.grafana_admin_password
+  storage_class_name     = "ebs-sc"
+
+  providers = {
+    helm = helm
+  }
 }
 
 # Підключаємо модуль RDS
