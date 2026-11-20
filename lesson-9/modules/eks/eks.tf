@@ -87,7 +87,7 @@ resource "aws_eks_node_group" "nodes" {
   node_group_name = var.node_group_name
   node_role_arn   = aws_iam_role.nodes.arn
   subnet_ids      = var.subnet_ids
-  instance_types  = ["t3.small"]
+  instance_types  = [var.instance_type]
 
   scaling_config {
     desired_size = var.desired_size
